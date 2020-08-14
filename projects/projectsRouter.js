@@ -37,6 +37,44 @@ router.get("/resources", (req, res) => {
     });
 });
 
-// router.post("/resources", (req, res)
+router.post("/resources", (req, res) => {
+  Projects.addResource(req.body)
+    .then((resource) => {
+      res.status(201).json(resource);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
+//GET AND POST TASKS
+router.get("/tasks", (req, res) => {
+  let outarr = [];
+  Projects.getTasks()
+    .then((tasks) => {
+      tasks.map((task) => {
+        if (task.task_completed === 0 || task.task_completed === null) {
+          outarr.push({ ...task, task_completed: false });
+        } else {
+          outarr.push({ ...task, task_completed: true });
+        }
+      });
+      res.status(200).json(outarr);
+    })
+    .catch((error) => {
+      res.status(500).json(error);
+    });
+});
+
+router.post('/projects/:id/tasks', (req, res) => {
+    Projects.addTask({...req.body, project_id: req.params.id})
+    .then(task => {
+        res.status(201).json(task)
+    })
+    .catch(error => {
+        res.status(500).json(error)
+    })
+})
+
 
 module.exports = router;
